@@ -65,10 +65,11 @@ def apply_rotary_emb(
     # slide 22 (linked above).
     freqs = torch.arange(0, head_dim, 2.0, device=device) / head_dim
     freqs = 1.0 / (theta ** freqs)
-    pos = torch.arange(0, max_seq_len, device=device).float()
+    pos = torch.arange(0, seqlen, device=device).float()
     angles = pos[:, None] * freqs[None, :]
     cos = torch.cos(angles)
     sin = torch.sin(angles)
+    
     print("angles shape:", angles.shape)
     cos = cos[None, :, None, :].expand(query_real.shape[0], -1, query_real.shape[2], -1)
     sin = sin[None, :, None, :].expand(query_real.shape[0], -1, query_real.shape[2], -1)

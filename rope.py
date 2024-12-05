@@ -69,8 +69,10 @@ def apply_rotary_emb(
     angles = pos[:, None] * freqs[None, :]
     cos = torch.cos(angles)
     sin = torch.sin(angles)
-    cos = cos[:, None, None, :]
-    sin = sin[:, None, None, :]
+    cos = cos[None, :, None, :].expand(query_real.shape[0], -1, query_real.shape[2], -1)
+    sin = sin[None, :, None, :].expand(query_real.shape[0], -1, query_real.shape[2], -1)
+
+    
     
     print("query_real shape:", query_real.shape)
     print("query_imag shape:", query_imag.shape)

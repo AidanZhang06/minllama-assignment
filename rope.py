@@ -71,6 +71,11 @@ def apply_rotary_emb(
     sin = torch.sin(angles)
     cos = cos[:, None, None, :].expand(-1, query.shape[2], -1, -1)
     sin = sin[:, None, None, :].expand(-1, query.shape[2], -1, -1)
+    
+    print("query_real shape:", query_real.shape)
+    print("query_imag shape:", query_imag.shape)
+    print("cos shape:", cos.shape)
+    print("sin shape:", sin.shape)
 
     # Then, combine these trigonometric values with the tensors query_real, query_imag,
     # key_real, and key_imag.

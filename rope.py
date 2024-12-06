@@ -100,5 +100,7 @@ def apply_rotary_emb(
     k_interleaved = torch.stack((k_real_rotated, k_imag_rotated), dim=-1)
     key_out = k_interleaved.view(k_interleaved.shape[0], k_interleaved.shape[2], k_interleaved.shape[1], -1)
  
+    print("query_out shape:", query_out.shape)
+    print("key_out shape:", key_out.shape)
  
     return query_out, key_out

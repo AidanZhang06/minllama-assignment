@@ -91,8 +91,8 @@ def apply_rotary_emb(
     # key_out = key_real[:, :, :, None] * cos - key_imag[:, :, :, None] * sin
     # key_out = torch.cat((key_out, key_real[:, :, :, None] * sin + key_imag[:, :, :, None] * cos), dim=-1)
     # Return the rotary position embeddings for the query and key tensors
-    q_real_rotated = query_real[:, :, :, None] * cos - query_imag[:, :, :, None] * sin
-    q_imag_rotated = query_real[:, :, :, None] * sin + query_imag[:, :, :, None] * cos
+    q_real_rotated = query_real * cos - query_imag * sin
+    q_imag_rotated = query_real * sin + query_imag * cos
     q_interleaved = torch.stack((q_real_rotated, q_imag_rotated), dim=-1)
     print("q_real_rotated shape:", q_real_rotated.shape)
     print("q_interleaved shape:", q_interleaved.shape)

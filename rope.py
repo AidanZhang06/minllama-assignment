@@ -97,8 +97,8 @@ def apply_rotary_emb(
     print("q_real_rotated shape:", q_real_rotated.shape)
     print("q_interleaved shape:", q_interleaved.shape)
     query_out = q_interleaved.view(q_interleaved.shape[0], q_interleaved.shape[2], q_interleaved.shape[1], -1)
-    k_real_rotated = key_real[:, :, :, None] * cos - key_imag[:, :, :, None] * sin
-    k_imag_rotated = key_real[:, :, :, None] * sin + key_imag[:, :, :, None] * cos
+    k_real_rotated = key_real * cos - key_imag * sin
+    k_imag_rotated = key_real * sin + key_imag * cos
     k_interleaved = torch.stack((k_real_rotated, k_imag_rotated), dim=-1)
     key_out = k_interleaved.view(k_interleaved.shape[0], k_interleaved.shape[2], k_interleaved.shape[1], -1)
  

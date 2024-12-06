@@ -86,9 +86,19 @@ def apply_rotary_emb(
 
     query_out = None
     key_out = None
-    query_out = query_real[:, :, :, None] * cos - query_imag[:, :, :, None] * sin
-    query_out = torch.cat((query_out, query_real[:, :, :, None] * sin + query_imag[:, :, :, None] * cos), dim=-1)
-    key_out = key_real[:, :, :, None] * cos - key_imag[:, :, :, None] * sin
-    key_out = torch.cat((key_out, key_real[:, :, :, None] * sin + key_imag[:, :, :, None] * cos), dim=-1)
+    # query_out = query_real[:, :, :, None] * cos - query_imag[:, :, :, None] * sin
+    # query_out = torch.cat((query_out, query_real[:, :, :, None] * sin + query_imag[:, :, :, None] * cos), dim=-1)
+    # key_out = key_real[:, :, :, None] * cos - key_imag[:, :, :, None] * sin
+    # key_out = torch.cat((key_out, key_real[:, :, :, None] * sin + key_imag[:, :, :, None] * cos), dim=-1)
     # Return the rotary position embeddings for the query and key tensors
+    q_real_rotated = query_real[:, :, :, None] * cos - query_imag[:, :, :, None] * sin
+    q_imag_rotated = query_real[:, :, :, None] * sin + query_imag[:, :, :, None] * cos
+    q_interleaved = torch.stack((q_real_rotated, q_imag_rotated), dim=-1)
+    query_out = q_interleaved.view(q_interleaved.shape[0], q_interleaved.shape[1], q_interleaved.shape[2], -1)
+    k_real_rotated = key_real[:, :, :, None] * cos - key_imag[:, :, :, None] * sin
+    k_imag_rotated = key_real[:, :, :, None] * sin + key_imag[:, :, :, None] * cos
+    k_interleaved = torch.stack((k_real_rotated, k_imag_rotated), dim=-1)
+    key_out = k_interleaved.view(k_interleaved.shape[0], k_interleaved.shape[1], k_interleaved.shape[2], -1)
+ 
+ 
     return query_out, key_out

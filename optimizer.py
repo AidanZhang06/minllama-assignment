@@ -67,7 +67,7 @@ class AdamW(Optimizer):
                 a_t = alpha * math.sqrt(1-beta2**t) / (1-beta1**t)
 
                 # Update parameters
-                p.data -= a_t * m / (math.sqrt(v) + eps)
+                p.data -= a_t * m / (torch.sqrt(v) + eps)
 
                 # Add weight decay after the main gradient-based updates.
                 # Please note that the learning rate should be incorporated into this update.

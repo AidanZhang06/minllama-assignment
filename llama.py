@@ -44,7 +44,7 @@ class RMSNorm(torch.nn.Module):
             torch.Tensor: The normalized tensor.
         """
         # todo
-        raise NotImplementedError
+        return x / (torch.sqrt(torch.mean(x ** 2, dim=-1, keepdim=True) + self.eps))
 
     def forward(self, x):
         """
@@ -202,7 +202,10 @@ class LlamaLayer(nn.Module):
            output of the feed-forward network
         '''
         # todo
-        raise NotImplementedError
+        h = self.attention_norm(x)
+        h += self.attention(h)  # residual connection
+        h = self.ffn_norm(h)
+        h += self.feed_forward(h)  # residual connection
 
 class Llama(LlamaPreTrainedModel):
     def __init__(self, config: LlamaConfig):
@@ -279,7 +282,7 @@ class Llama(LlamaPreTrainedModel):
             logits, _ = self(idx_cond)
             logits = logits[:, -1, :] # crop to just the final time step
             # todo
-            raise NotImplementedError
+            
 
             if temperature == 0.0:
                 # select the single most likely index
@@ -294,7 +297,10 @@ class Llama(LlamaPreTrainedModel):
 
                 Note that we are not using top-k sampling/nucleus sampling in this procedure.
                 '''
-                idx_next = None
+                
+                scaled_logits = logits / temperature
+                probs = F.softmax(scaled_logits, dim=-1)
+                idx_next = torch.multinomial(probs, num_samples=1)
             # append sampled index to the running sequence and continue
             idx = torch.cat((idx, idx_next), dim=1)
 

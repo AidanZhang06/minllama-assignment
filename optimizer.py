@@ -53,7 +53,7 @@ class AdamW(Optimizer):
                 eps = group["eps"]
 
                 # Update first and second moments of the gradients
-                state["t"] += 1
+                state["t"] += 1.0
                 m, v = state["m"], state["v"]
                 t = state["t"]
                 

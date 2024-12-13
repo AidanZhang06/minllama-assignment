@@ -43,8 +43,8 @@ class AdamW(Optimizer):
                 if p not in self.state:
                     self.state[p] = {}
                     self.state[p]["t"] = 0.0
-                    self.state[p]["m"] = torch.zeros_like(p.data)
-                    self.state[p]["v"] = torch.zeros_like(p.data)
+                    self.state[p]["m"] = torch.zeros_like(p.data, dtype=torch.float64)
+                    self.state[p]["v"] = torch.zeros_like(p.data, dtype=torch.float64)
                 state = self.state[p]
 
                 # Access hyperparameters from the `group` dictionary

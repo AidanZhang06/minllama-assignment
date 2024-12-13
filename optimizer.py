@@ -57,14 +57,14 @@ class AdamW(Optimizer):
                 m, v = state["m"], state["v"]
                 t = state["t"]
                 
-                state["m"] = beta1*m + (1-beta1)*grad
-                state["v"] = beta2*v + (1-beta2)*(grad**2)
+                state["m"] = beta1*m + (1.0-beta1)*grad
+                state["v"] = beta2*v + (1.0-beta2)*(grad**2)
 
                 # Bias correction
                 # Please note that we are using the "efficient version" given in
                 # https://arxiv.org/abs/1412.6980
                 
-                a_t = alpha * math.sqrt(1-beta2**t) / (1-beta1**t)
+                a_t = alpha * math.sqrt(1.0-beta2**t) / (1.0-beta1**t)
 
                 # Update parameters
                 p.data.sub_(a_t * m / (torch.sqrt(v) + eps))

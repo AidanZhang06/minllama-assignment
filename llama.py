@@ -97,6 +97,7 @@ class Attention(nn.Module):
         scores = torch.matmul(query, key.transpose(-2, -1)) / math.sqrt(self.head_dim)
         attn_weights = F.softmax(scores, dim=-1)
         attn_weights = self.attn_dropout(attn_weights)
+        print(attn_weights.shape, value.shape)
         output = torch.matmul(attn_weights, value)
         return output
         

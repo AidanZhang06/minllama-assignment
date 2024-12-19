@@ -205,11 +205,9 @@ class LlamaLayer(nn.Module):
            output of the feed-forward network
         '''
         # todo
-        h = self.attention_norm(x)
-        h += self.attention(h)  # residual connection
-        h = self.ffn_norm(h)
-        h += self.feed_forward(h)  # residual connection
-        return h
+        h = x + self.attention(self.attention_norm(x))
+        h2 = h + self.feed_forward(self.ffn_norm(h))
+        return h2
 
 class Llama(LlamaPreTrainedModel):
     def __init__(self, config: LlamaConfig):

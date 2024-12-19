@@ -67,7 +67,7 @@ class LlamaDataset(Dataset):
 
 
 # create the data which is a list of (sentence, label, token for the labels)
-def create_data(filename, tokenizer: Tokenizer, flag: str ='train', lower: bool = False, eos: bool = True, prompt_suffix: Optional[str]=None):
+def create_data(filename, tokenizer: Tokenizer, flag: str ='train', lower: bool = False, eos: bool = True, prompt_prefix: Optional[str]=None, prompt_suffix: Optional[str]=None):
 	# specify the tokenizer
 	num_labels = {}
 	data = []
@@ -78,8 +78,8 @@ def create_data(filename, tokenizer: Tokenizer, flag: str ='train', lower: bool 
 			if lower:
 				org_sent = org_sent.lower()
 			sent = org_sent.strip()
-			if prompt_suffix is not None:
-				sent = f"{sent} {prompt_suffix}"
+			if prompt_suffix is not None and prompt_prefix is not None:
+				sent = f"{prompt_prefix} {sent} {prompt_suffix}"
 			tokens = tokenizer.encode(sent, bos=True, eos=eos)
 			label = int(label.strip())
 			if label not in num_labels:
@@ -248,20 +248,22 @@ def test_with_prompting(args):
 				'option': args.option}
 
 		config = SimpleNamespace(**config)
-
 		if len(label_names) == 2:
 			label_name_str = " or ".join(label_names)
+			prompt_prefix = f"Your task is to classify movie reviews as {label_name_str}. Here are some examples of sentiment classifications: \nInput: This is the first 2 out of 10 that I 've given any movie . What made this movie so bad for me ? Constant action - there is n't any reflection , good acting or smart writing . I also disliked the filming style where the shakiness and different angles just made it feel like you are a part of a pretentious scene . Finally , I get to see an action movie that does n't try to please anyone with a brain.<br /><br />I liked the first two Bourne movies , but I hated this one.<br /><br />Warning - after watching this movie , you will be full of lethargy and you may want to sleep a bit before driving your car ! Is this movie {label_name_str}? This movie is \nOutput: bad"
+			prompt_suffix = f"Is this movie {label_name_str}? This movie is "
 		else:
 			label_name_str = ", ".join(label_names[:-1]) + ", or " + label_names[-1]
-		prompt_suffix=f"Let's think step by step. Is this movie {label_name_str}? This movie is "
+			prompt_prefix = f"Your task is to classify movie reviews as {label_name_str}. Here are some examples of sentiment classifications: \nInput: This is the first 2 out of 10 that I 've given any movie . What made this movie so bad for me ? Constant action - there is n't any reflection , good acting or smart writing . I also disliked the filming style where the shakiness and different angles just made it feel like you are a part of a pretentious scene . Finally , I get to see an action movie that does n't try to please anyone with a brain.<br /><br />I liked the first two Bourne movies , but I hated this one.<br /><br />Warning - after watching this movie , you will be full of lethargy and you may want to sleep a bit before driving your car ! Is this movie {label_name_str}? This movie is \nOutput: awful"
+			prompt_suffix = f"Is this movie {label_name_str}? This movie is "
 		model = LlamaZeroShotClassifier(config, tokenizer, label_names)
 		model = model.to(device)
 
-		dev_data = create_data(args.dev, tokenizer, 'valid', eos=False, prompt_suffix=prompt_suffix)
+		dev_data = create_data(args.dev, tokenizer, 'valid', eos=False, prompt_prefix=prompt_prefix, prompt_suffix=prompt_suffix)
 		dev_dataset = LlamaDataset(dev_data, args, eos=False)
 		dev_dataloader = DataLoader(dev_dataset, shuffle=False, batch_size=args.batch_size, collate_fn=dev_dataset.collate_fn)
 
-		test_data = create_data(args.test, tokenizer, 'test', eos=False, prompt_suffix=prompt_suffix)
+		test_data = create_data(args.test, tokenizer, 'test', eos=False, prompt_prefix=prompt_prefix, prompt_suffix=prompt_suffix)
 		test_dataset = LlamaDataset(test_data, args, eos=False)
 		test_dataloader = DataLoader(test_dataset, shuffle=False, batch_size=args.batch_size, collate_fn=test_dataset.collate_fn)
 

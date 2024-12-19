@@ -253,7 +253,7 @@ def test_with_prompting(args):
 			label_name_str = " or ".join(label_names)
 		else:
 			label_name_str = ", ".join(label_names[:-1]) + ", or " + label_names[-1]
-		prompt_suffix=f"Is this movie {label_name_str}? This movie is "
+		prompt_suffix=f"Let's think step by step. Is this movie {label_name_str}? This movie is "
 		model = LlamaZeroShotClassifier(config, tokenizer, label_names)
 		model = model.to(device)
 

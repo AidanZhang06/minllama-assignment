@@ -97,7 +97,8 @@ class Attention(nn.Module):
         print(query.shape, key.shape, value.shape)
         scores = torch.matmul(query, key.transpose(-2, -1)) / math.sqrt(self.head_dim)
         attn_weights = F.softmax(scores, dim=-1)
-        attn_weights = self.attn_dropout(attn_weights)
+        if self.attn_dropout is not None:
+            attn_weights = self.attn_dropout(attn_weights)
         print(attn_weights.shape, value.shape)
         output = torch.matmul(attn_weights, value)
         return output
@@ -208,6 +209,7 @@ class LlamaLayer(nn.Module):
         h += self.attention(h)  # residual connection
         h = self.ffn_norm(h)
         h += self.feed_forward(h)  # residual connection
+        return h
 
 class Llama(LlamaPreTrainedModel):
     def __init__(self, config: LlamaConfig):

@@ -70,16 +70,16 @@ def apply_rotary_emb(
     cos = torch.cos(angles)
     sin = torch.sin(angles)
     
-    print("angles shape:", angles.shape)
+    # print("angles shape:", angles.shape)
     cos = cos[None, :, None, :].expand(query_real.shape[0], -1, query_real.shape[2], -1)
     sin = sin[None, :, None, :].expand(query_real.shape[0], -1, query_real.shape[2], -1)
 
     
     
-    print("query_real shape:", query_real.shape)
-    print("query_imag shape:", query_imag.shape)
-    print("cos shape:", cos.shape)
-    print("sin shape:", sin.shape)
+    # print("query_real shape:", query_real.shape)
+    # print("query_imag shape:", query_imag.shape)
+    # print("cos shape:", cos.shape)
+    # print("sin shape:", sin.shape)
 
     # Then, combine these trigonometric values with the tensors query_real, query_imag,
     # key_real, and key_imag.
@@ -94,15 +94,15 @@ def apply_rotary_emb(
     q_real_rotated = query_real * cos - query_imag * sin
     q_imag_rotated = query_real * sin + query_imag * cos
     q_interleaved = torch.stack((q_real_rotated, q_imag_rotated), dim=-1)
-    print("q_real_rotated shape:", q_real_rotated.shape)
-    print("q_interleaved shape:", q_interleaved.shape)
+    # print("q_real_rotated shape:", q_real_rotated.shape)
+    # print("q_interleaved shape:", q_interleaved.shape)
     query_out = q_interleaved.view(q_interleaved.shape[0], q_interleaved.shape[1], q_interleaved.shape[2], -1)
     k_real_rotated = key_real * cos - key_imag * sin
     k_imag_rotated = key_real * sin + key_imag * cos
     k_interleaved = torch.stack((k_real_rotated, k_imag_rotated), dim=-1)
     key_out = k_interleaved.view(k_interleaved.shape[0], k_interleaved.shape[1], k_interleaved.shape[2], -1)
  
-    print("query_out shape:", query_out.shape)
-    print("key_out shape:", key_out.shape)
+    # print("query_out shape:", query_out.shape)
+    # print("key_out shape:", key_out.shape)
  
     return query_out, key_out

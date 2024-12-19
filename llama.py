@@ -94,12 +94,12 @@ class Attention(nn.Module):
         attention matrix before applying it to the value tensor.
         '''
         # todo
-        print(query.shape, key.shape, value.shape)
+        # print(query.shape, key.shape, value.shape)
         scores = torch.matmul(query, key.transpose(-2, -1)) / math.sqrt(self.head_dim)
         attn_weights = F.softmax(scores, dim=-1)
         if self.attn_dropout is not None:
             attn_weights = self.attn_dropout(attn_weights)
-        print(attn_weights.shape, value.shape)
+        # print(attn_weights.shape, value.shape)
         output = torch.matmul(attn_weights, value)
         return output
         
